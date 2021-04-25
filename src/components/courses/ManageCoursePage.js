@@ -1,43 +1,39 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {connect} from "react-redux";
 import PropTypes from "prop-types";
-import {bindActionCreators} from "redux";
 
-import * as courseActions from "../../redux/actions/courseActions";
-import * as authorActions from "../../redux/actions/authorActions";
+import { loadCourses } from "../../redux/actions/courseActions";
+import { loadAuthors } from "../../redux/actions/authorActions";
 
-class ManageCoursePage extends React.Component {
+function ManageCoursePage({courses, authors, loadAuthors, loadCourses}) {
 
-    componentDidMount() {
-        const {courses, authors, actions} = this.props;
-
+    useEffect(() => {
         if(!courses.length) {
-            actions.loadCourses().catch(err => {
+            loadCourses().catch(err => {
                 alert("Loading courses failed " + err);
             });
         }
 
         if(!authors.length) {
-            actions.loadAuthors().catch(err => {
+            loadAuthors().catch(err => {
                 alert("Loading authors failed " + err);
             });
         }
-    }
+    },[]);
 
+    return (
+        <>
+            <h2>Manage Course</h2>
+        </>
+    );
 
-    render() {
-        return (
-            <>
-                <h2>Manage Course</h2>
-            </>
-        );
-    }
 }
 
 ManageCoursePage.propTypes = {
     authors: PropTypes.array.isRequired,
     courses: PropTypes.array.isRequired,
-    actions: PropTypes.object.isRequired
+    loadCourses: PropTypes.func.isRequired,
+    loadAuthors: PropTypes.func.isRequired,
 };
 
 function mapStateToProps(state) {
@@ -47,13 +43,9 @@ function mapStateToProps(state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        actions: {
-            loadCourses: bindActionCreators(courseActions.loadCourses, dispatch),
-            loadAuthors: bindActionCreators(authorActions.loadAuthors, dispatch),
-        }
-    }
+const mapDispatchToProps = {
+    loadCourses,
+    loadAuthors
 }
 
 export default connect( mapStateToProps, mapDispatchToProps )(ManageCoursePage);
